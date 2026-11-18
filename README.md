@@ -1,2 +1,13 @@
-# CA
-CA Website - omkar kharade
+# Omkar Kharade & Co.
+## Enable the owner editor
+1. Use GitHub Pages with the Jekyll build from the publishing branch root. Copy the contents of this project, including the underscore directories. Keep existing GitHub Pages custom-domain settings. The public archive starts empty.
+2. In GitHub create a fine-grained personal access token restricted to this repository with Contents read/write. The account must have permission to commit to the publishing branch. Choose an expiration and renew the token before that date. The Worker only writes the fixed file `_data/updates.json`.
+3. With Node 22+ installed, open a terminal in `_worker`. Check REPOSITORY and BRANCH in wrangler.jsonc, run `npx wrangler@4 login`, then `npx wrangler@4 deploy`. Enable a workers.dev subdomain if prompted. If the Worker name already exists in your account for another project, choose a unique name first.
+4. Run `bash setup-secrets.sh` locally. Enter a unique owner username, a strong password and the GitHub token at the prompts. This uploads a salted password hash, username, session key and token to the Worker. Running it again changes the credentials and invalidates previous sessions.
+5. Set editor_url in the site's _config.yml to the full HTTPS workers.dev URL printed at deploy. Commit the site files to the publishing branch. The firm logo button appears on the top right of the Updates heading once GitHub Pages rebuilds.
+6. Click the icon, sign in and publish a test headline. Check the public Updates page after deployment, then remove the test entry through the editor. Confirm the deletion after the next deployment.
+
+## Owner workflow
+Open Updates, click the firm icon, sign in and enter a headline, date, message and optional HTTPS source. Click Publish. Edit and Delete are available below the form. An edit creates a Git commit. If the list changed in another tab, reload and reapply your edit. Previously published text remains in public Git history. Sessions expire after one hour.
+
+The public site and JSON feed (/data/updates.json) are built from the same data. The Worker handles only editor requests. No CMS installation or repository login is required for the owner. If publishing stops, check token expiry, Worker logs and the Pages deployment status.

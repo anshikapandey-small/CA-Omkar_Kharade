@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>Firm updates · Owner editor</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f3f6f8;color:#14283a;font:1rem/1.55 system-ui,sans-serif}header{background:#112e46;color:white;padding:1.2rem max(5vw,1rem);display:flex;justify-content:space-between;align-items:center}header a{color:white}main{max-width:54rem;margin:2rem auto;padding:0 1rem}section{background:white;border:1px solid #dbe3ea;border-radius:12px;margin:1rem 0;padding:clamp(1rem,3vw,2rem)}h1,h2{font-family:Georgia,serif;margin:0 0 .65rem}label{display:block;font-weight:600;margin-top:.8rem}input,textarea{width:100%;padding:.7rem;border:1px solid #8698a5;border-radius:5px;font:inherit}button{border:1px solid #24506e;border-radius:5px;padding:.6rem .9rem;background:white;color:#143c5a;cursor:pointer;font:inherit;margin:.6rem .4rem 0 0}button[type=submit]{background:#154c75;color:white}button:disabled{opacity:.55}article{padding:1rem 0;border-top:1px solid #ddd}article strong{display:block;overflow-wrap:anywhere}#status{font-weight:600}#signin{max-width:30rem;margin:2rem auto}[hidden]{display:none}
+</style></head><body>
+<header><strong>Omkar Kharade &amp; Co.</strong><a href="https://caomkarkharade.in/updates/">View public updates</a></header>
+<main><p id="status" role="status" aria-live="polite"></p>
+<section id="signin"><h1>Owner sign-in</h1><form id="login"><label>Username<input name="username" autocomplete="username" required></label><label>Password<input name="password" type="password" autocomplete="current-password" required maxlength="512"></label><button type="submit">Sign in</button></form></section>
+<div id="dashboard" hidden><section><h1 id="heading">New update</h1><form id="post">
+<label>Headline<input name="title" required maxlength="160"></label><label>Publication date<input name="date" type="date" required></label>
+<label>Message<textarea name="body" rows="6" maxlength="5000" required></textarea></label>
+<label>Source link (optional)<input name="source" type="url" placeholder="https://" maxlength="2048"></label>
+<button type="submit">Publish</button><button type="button" id="cancel" hidden>Cancel edit</button></form></section>
+<section><h2>Published updates</h2><div id="list"></div><button id="reload">Reload list</button><button id="logout">Sign out</button></section></div></main>
+<script>
+const byId=id=>document.getElementById(id);
+const login=byId('login'), post=byId('post');
+let snapshot, editing=null;
+function showEditor(active){byId('dashboard').hidden=!active;byId('signin').hidden=active}
+async function api(path,payload){
+ const response=await fetch('/'+path,payload===undefined?{cache:'no-store'}:{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+ const data=await response.json();
+ if(!response.ok){if(response.status===401)showEditor(false);throw Error(data.error||'Request failed.')}
+ return data;
+}
+function draft(item){
+ editing=item?.id||null;
+ post.reset();
+ const today=new Date();
+ post.elements.date.value=item?.date||today.getFullYear()+'-'+String(today.getMonth()+1).padStart(2,'0')+'-'+String(today.getDate()).padStart(2,'0');
+ if(item)for(const field of ['title','body','source'])post.elements[field].value=item[field]||'';
+ byId('heading').textContent=item?'Edit update':'New update';
+ byId('cancel').hidden=!item;
+ post.querySelector('button[type=submit]').textContent=item?'Save changes':'Publish';
+}
+function display(data){
+ snapshot=data;const list=byId('list');list.replaceChildren();
+ if(!data.items.length)list.textContent='No published updates yet.';
+ for(const item of data.items){
+ const row=document.createElement('article'),title=document.createElement('strong'),date=document.createElement('time');
+ title.textContent=item.title;date.textContent=item.date;row.append(title,date,document.createElement('br'));
+ for(const label of ['Edit','Delete']){
+ const button=document.createElement('button');button.textContent=label;
+ button.onclick=()=>{if(label==='Edit'){draft(item);post.elements.title.focus()}else if(confirm('Delete “'+item.title+'” from the public updates?'))run(async()=>{display(await api('entries',{action:'delete',id:item.id,sha:snapshot.sha}));if(editing===item.id)draft();statusText('Deletion saved. The public page will update after deployment.')})};
+ row.append(button);
+ }list.append(row);
+ }showEditor(true);
+}
+function statusText(s){byId('status').textContent=s}
+let busy=false;
+async function run(fn){if(busy)return;busy=true;document.querySelector('main').setAttribute('aria-busy','true');try{await fn()}catch(e){statusText(e.message)}finally{busy=false;document.querySelector('main').removeAttribute('aria-busy')}}
+login.onsubmit=e=>{e.preventDefault();run(async()=>{await api('login',Object.fromEntries(new FormData(login)));login.reset();display(await api('entries'));statusText('Signed in.')})};
+post.onsubmit=e=>{e.preventDefault();run(async()=>{display(await api('entries',{action:editing?'edit':'add',id:editing,sha:snapshot.sha,...Object.fromEntries(new FormData(post))}));draft();statusText('Saved to GitHub. Your update will appear after the site deploys.')})};
+byId('cancel').onclick=()=>draft();
+byId('reload').onclick=()=>run(async()=>{if(!confirm('Reload the latest updates and clear the current form?'))return;display(await api('entries'));draft();statusText('List refreshed.')});
+byId('logout').onclick=()=>run(async()=>{await api('logout',{});draft();snapshot=null;byId('list').replaceChildren();showEditor(false);statusText('Signed out.')});
+draft();run(async()=>{try{display(await api('entries'))}catch(e){if(e.message!=='Please sign in.')throw e}});
+</script></body></html>

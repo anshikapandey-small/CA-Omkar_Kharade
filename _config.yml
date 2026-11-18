@@ -1,0 +1,11 @@
+url: https://omkar-firm-editor.letswork2007.workers.dev
+timezone: Asia/Kolkata
+permalink: /updates/:year/:month/:day/:title/
+defaults:
+  - scope:
+      path: ""
+      type: posts
+    values:
+      layout: updates
+# Set to the HTTPS URL printed by Wrangler after deploying the owner editor.
+editor_url: ""

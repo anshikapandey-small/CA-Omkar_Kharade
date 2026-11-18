@@ -1093,6 +1093,18 @@ footer {
 }
 
 
+.welcome-service-links {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.5rem;
+}
+.welcome-service-links a {
+    color: #0d2740;
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+}
+
 /* Trust / clarity / compliance */
 
 .welcome-details {
@@ -3469,3 +3481,7 @@ textarea:focus {
     }
 }
 
+
+.updates-heading { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+.owner-entry { display: inline-flex; align-items: center; padding: .5rem; border-radius: .5rem; background: white; }
+.owner-entry img { object-fit: contain; }

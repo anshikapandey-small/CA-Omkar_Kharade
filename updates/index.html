@@ -1,0 +1,15 @@
+---
+layout: updates
+title: Updates
+---
+{% assign entries = site.data.updates | sort: "date" | reverse %}
+{% for item in entries %}
+<article id="update-{{ item.id | escape }}">
+  <time datetime="{{ item.date | escape }}">{{ item.date | date: "%d %B %Y" }}</time>
+  <h2>{{ item.title | escape }}</h2>
+  <p style="white-space:pre-line">{{ item.body | escape }}</p>
+  {% if item.source != empty %}<a href="{{ item.source | escape }}" rel="external">Read the source</a>{% endif %}
+</article>
+{% else %}
+<p>No updates have been published yet.</p>
+{% endfor %}
