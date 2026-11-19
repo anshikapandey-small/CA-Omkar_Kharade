@@ -8,4 +8,4 @@ defaults:
     values:
       layout: updates
 # Set to the HTTPS URL printed by Wrangler after deploying the owner editor.
-editor_url: ""
+editor_url: "https://omkar-firm-editor.letswork2007.workers.dev"
