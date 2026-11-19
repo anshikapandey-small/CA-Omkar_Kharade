@@ -17,8 +17,8 @@ async function signedSession(env, token) {
   const match = /^(\d{13})\.([\da-f-]{36})\.([\da-f]{64})$/.exec(token);
   return !!match && Number(match[1]) > Date.now() && await crypto.subtle.verify('HMAC', key, unhex(match[3]), utf8.encode(match[1]+'.'+match[2]));
 }
-async function github(env, update) {
-  const url = 'https://api.github.com/repos/'+env.REPOSITORY+'/contents/_data/updates.json';
+async function github(env, path, update) {
+  const url = 'https://api.github.com/repos/'+env.REPOSITORY+'/contents/'+path;
   const headers = {Authorization:'Bearer '+env.GITHUB_TOKEN, 'User-Agent':'firm-editor', Accept:'application/vnd.github+json'};
   const result = await fetch(update ? url : url+'?ref='+encodeURIComponent(env.BRANCH), {
     method:update ? 'PUT' : 'GET', headers, body:update ? JSON.stringify({...update, branch:env.BRANCH}) : undefined, cache:'no-store'
@@ -27,27 +27,57 @@ async function github(env, update) {
   if (!result.ok) fail(502,'GitHub could not complete this request. Check repository access and branch settings.');
   return result.json();
 }
+const imagePath = /^\/images\/updates\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\.jpg$/;
+function text(value, max, required = true) {
+  if (typeof value !== 'string' || value.length > max) fail(400, 'Check field lengths.');
+  value = value.trim();
+  if (required && !value) fail(400, 'A section is empty. Fill it in or remove it.');
+  return value;
+}
+function httpsUrl(value) {
+  const url = text(value, 2048);
+  if (!URL.canParse(url) || new URL(url).protocol !== 'https:') fail(400, 'Use a complete https:// link.');
+  return url;
+}
+function cleanBlocks(list) {
+  if (!Array.isArray(list) || !list.length || list.length > 60) fail(400, 'Add some content (up to 60 sections).');
+  return list.map(block => {
+    if (!block || typeof block !== 'object') fail(400, 'Invalid section.');
+    switch (block.type) {
+      case 'h': case 'sh': return {type: block.type, text: text(block.text, 160)};
+      case 'p': return {type: 'p', text: text(block.text, 4000)};
+      case 'ul':
+        if (!Array.isArray(block.items) || !block.items.length || block.items.length > 30) fail(400, 'A bullet list needs 1 to 30 points.');
+        return {type: 'ul', items: block.items.map(item => text(item, 300))};
+      case 'img':
+        if (typeof block.src !== 'string' || !imagePath.test(block.src)) fail(400, 'A photo is missing. Upload it again.');
+        return {type: 'img', src: block.src, alt: text(block.alt ?? '', 200, false), caption: text(block.caption ?? '', 200, false)};
+      case 'link': return {type: 'link', label: text(block.label, 80), url: httpsUrl(block.url)};
+      default: return fail(400, 'Unknown section type.');
+    }
+  });
+}
 function entry(data, id) {
-  const read = (name,max) => {
-    if (typeof data[name] !== 'string' || data[name].length > max) fail(400,'Check field lengths.');
-    return data[name].trim();
-  };
-  const title=read('title',160), body=read('body',5000), date=read('date',10), source=read('source',2048);
-  if (!title || !body || !/^\d{4}-\d\d-\d\d$/.test(date) || !Number.isFinite(Date.parse(date)) || new Date(date).toISOString().slice(0,10)!==date) fail(400,'Enter a headline, date and message.');
-  if (source && !URL.canParse(source)) fail(400,'Enter a complete source URL.');
-  if (source && new URL(source).protocol !== 'https:') fail(400,'Use an HTTPS source link.');
-  return {id,title,body,date,source};
+  const title = text(data.title, 160, false), date = text(data.date, 10, false), source = text(data.source ?? '', 2048, false);
+  if (!title || !/^\d{4}-\d\d-\d\d$/.test(date) || !Number.isFinite(Date.parse(date)) || new Date(date).toISOString().slice(0,10) !== date) fail(400,'Enter a headline and a date.');
+  if (source) httpsUrl(source);
+  return {id, title, date, source, blocks: cleanBlocks(data.blocks)};
 }
 export async function handle(req,env) {
   const url=new URL(req.url);
-  if (url.pathname==='/' && req.method==='GET') return new Response(editor,{headers:{'Content-Type':'text/html; charset=utf-8','Cache-Control':'no-store','Content-Security-Policy':"default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; connect-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'"}});
+  if (url.pathname==='/' && req.method==='GET') {
+    const site = (env.SITE_URL || '').replace(/\/$/, '');
+    return new Response(editor.replaceAll('__SITE_URL__', site),{headers:{'Content-Type':'text/html; charset=utf-8','Cache-Control':'no-store','Content-Security-Policy':"default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src data: "+site+"; connect-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'"}});
+  }
   const json=(value,headers={})=>Response.json(value,{headers:{'Cache-Control':'no-store',...headers}});
   let data;
   if(req.method==='POST') {
     if (req.headers.get('Origin')!==url.origin || req.headers.get('Content-Type')!=='application/json') fail(403,'Request rejected.');
-    const text=await req.text();
-    if(text.length>12000) fail(413,'Request too large.');
-    try { data=JSON.parse(text); } catch { fail(400,'Invalid request.'); }
+    const limit=url.pathname==='/upload' ? 2450000 : 60000;
+    if(Number(req.headers.get('Content-Length')||0)>limit) fail(413,'Request too large.');
+    const raw=await req.text();
+    if(raw.length>limit) fail(413,'Request too large.');
+    try { data=JSON.parse(raw); } catch { fail(400,'Invalid request.'); }
     if (!data || typeof data!=='object') fail(400,'Invalid request.');
   }
   if(url.pathname==='/login' && data) {
@@ -64,10 +94,19 @@ export async function handle(req,env) {
     return json({ok:true},{'Set-Cookie':cookieName+'='+await signedSession(env)+cookieFlags+'; Max-Age=3600'});
   }
   if(url.pathname==='/logout' && data) return json({ok:true},{'Set-Cookie':cookieName+'='+cookieFlags+'; Max-Age=0'});
-  if(url.pathname!=='/entries' || !['GET','POST'].includes(req.method)) fail(404,'Unknown request.');
+  if(!['/entries','/upload'].includes(url.pathname) || !['GET','POST'].includes(req.method)) fail(404,'Unknown request.');
   const cookie=(req.headers.get('Cookie')||'').split('; ').find(c=>c.startsWith(cookieName+'='))?.slice(cookieName.length+1)||'';
   if(!cookie || !await signedSession(env,cookie)) fail(401,'Please sign in.');
-  const file=await github(env);
+  if(url.pathname==='/upload') {
+    const image=data?.image;
+    if(typeof image!=='string' || image.length<100 || image.length>2400000 || image.length%4 || !/^[A-Za-z0-9+/]+={0,2}$/.test(image)) fail(400,'This photo could not be accepted.');
+    const head=atob(image.slice(0,8));
+    if(head.charCodeAt(0)!==0xFF || head.charCodeAt(1)!==0xD8 || head.charCodeAt(2)!==0xFF) fail(400,'Only JPEG photos are accepted.');
+    const name='images/updates/'+crypto.randomUUID()+'.jpg';
+    await github(env,name,{message:'Owner: upload update photo',content:image});
+    return json({src:'/'+name});
+  }
+  const file=await github(env,'_data/updates.json');
   if (file.encoding!=='base64') fail(503,'The updates archive needs maintenance.');
   const items=JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(file.content), c=>c.charCodeAt(0))));
   if(!data) return json({items,sha:file.sha});
@@ -83,7 +122,7 @@ export async function handle(req,env) {
   const bytes=utf8.encode(JSON.stringify(items,null,2)+'\n');
   if(bytes.length>900000) fail(400,'Archive is full. Shorten or remove older entries.');
   let binary=''; for(const b of bytes) binary+=String.fromCharCode(b);
-  const result=await github(env,{sha:file.sha,message:'Owner: '+data.action+' firm update',content:btoa(binary)});
+  const result=await github(env,'_data/updates.json',{sha:file.sha,message:'Owner: '+data.action+' firm update',content:btoa(binary)});
   return json({items,sha:result.content.sha});
 }
 export default {async fetch(req,env) {

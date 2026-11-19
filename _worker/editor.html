@@ -1,58 +1,278 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>Firm updates · Owner editor</title>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>Updates editor · Omkar Kharade &amp; Co.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Lora:wght@600;700&display=swap">
+<link rel="icon" href="__SITE_URL__/logo.jpeg">
 <style>
-*{box-sizing:border-box}body{margin:0;background:#f3f6f8;color:#14283a;font:1rem/1.55 system-ui,sans-serif}header{background:#112e46;color:white;padding:1.2rem max(5vw,1rem);display:flex;justify-content:space-between;align-items:center}header a{color:white}main{max-width:54rem;margin:2rem auto;padding:0 1rem}section{background:white;border:1px solid #dbe3ea;border-radius:12px;margin:1rem 0;padding:clamp(1rem,3vw,2rem)}h1,h2{font-family:Georgia,serif;margin:0 0 .65rem}label{display:block;font-weight:600;margin-top:.8rem}input,textarea{width:100%;padding:.7rem;border:1px solid #8698a5;border-radius:5px;font:inherit}button{border:1px solid #24506e;border-radius:5px;padding:.6rem .9rem;background:white;color:#143c5a;cursor:pointer;font:inherit;margin:.6rem .4rem 0 0}button[type=submit]{background:#154c75;color:white}button:disabled{opacity:.55}article{padding:1rem 0;border-top:1px solid #ddd}article strong{display:block;overflow-wrap:anywhere}#status{font-weight:600}#signin{max-width:30rem;margin:2rem auto}[hidden]{display:none}
+:root{--ink:#14202b;--muted:#667482;--navy:#0d2740;--blue:#1d5d8f;--gold:#c79b49;--paper:#f8f7f3;--line:#dfe5e9;--danger:#a23a2e;--shadow:0 18px 50px rgba(13,39,64,.10)}
+*{box-sizing:border-box}
+body{margin:0;font-family:"DM Sans",Arial,sans-serif;color:var(--ink);background:var(--paper);line-height:1.6}
+h1,h2,h3,h4{font-family:"Lora",Georgia,serif;color:var(--navy);line-height:1.25;margin:0}
+[hidden]{display:none!important}
+.top{background:var(--navy);border-bottom:3px solid var(--gold)}
+.top .in{width:min(960px,94%);margin:auto;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 0}
+.brand{display:flex;align-items:center;gap:12px;color:#fff}
+.brand img{height:40px;width:auto;background:#fff;border-radius:6px;padding:3px}
+.brand strong{display:block;font-family:"Lora",Georgia,serif;font-size:15px;letter-spacing:.02em}
+.brand small{display:block;font-size:11px;letter-spacing:.14em;color:#c9d8e4}
+.top a.view{color:#fff;font-size:14px;font-weight:600;border:1px solid rgba(255,255,255,.35);padding:8px 14px;border-radius:6px;text-decoration:none;white-space:nowrap}
+main{width:min(960px,94%);margin:28px auto 80px}
+.card{background:#fff;border:1px solid var(--line);border-top:3px solid var(--gold);border-radius:10px;box-shadow:var(--shadow);padding:clamp(18px,3.4vw,32px);margin:0 0 22px}
+.card h1{font-size:clamp(26px,4vw,34px)}
+.card h2{font-size:22px}
+.step{display:flex;align-items:center;gap:10px;margin:26px 0 4px}
+.step:first-of-type{margin-top:18px}
+.step b{display:inline-grid;place-items:center;width:28px;height:28px;border-radius:50%;background:var(--navy);color:#fff;font:700 14px "DM Sans",Arial,sans-serif}
+.hint{color:var(--muted);font-size:14px;margin:2px 0 10px}
+label,.lab{display:block;font-weight:700;font-size:14px;margin:16px 0 6px;color:var(--navy)}
+.lab small,label small{font-weight:400;color:var(--muted)}
+input,textarea{width:100%;font:inherit;font-size:16px;padding:11px 12px;border:1px solid #c9d2d9;border-radius:6px;background:#fff;color:var(--ink)}
+textarea{resize:vertical;min-height:110px}
+input:focus,textarea:focus{outline:3px solid rgba(199,155,73,.45);border-color:var(--blue)}
+.btn:focus-visible,a:focus-visible{outline:3px solid rgba(199,155,73,.65);outline-offset:2px}
+.row{display:grid;grid-template-columns:1fr 12rem;gap:14px}
+@media(max-width:620px){.row{grid-template-columns:1fr}.top .in{flex-wrap:wrap}}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:44px;padding:10px 18px;border-radius:6px;border:1px solid #c9d2d9;background:#fff;color:var(--navy);font:700 14px "DM Sans",Arial,sans-serif;cursor:pointer}
+.btn:hover{border-color:var(--blue)}
+.btn.primary{background:var(--blue);border-color:var(--blue);color:#fff}
+.btn.primary:hover{background:var(--navy);border-color:var(--navy)}
+.btn.danger{color:var(--danger);border-color:#e3c3be}
+.btn.small{min-height:36px;padding:6px 12px;font-size:13px}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
+#status{position:sticky;top:8px;z-index:5;margin:0 0 16px;padding:12px 16px;border-radius:8px;background:#fff;border:1px solid var(--line);border-left:4px solid var(--blue);font-weight:600;box-shadow:var(--shadow)}
+#status:empty{display:none}
+#status.err{border-left-color:var(--danger);color:var(--danger)}
+#signin{max-width:30rem;margin:40px auto}
+.blocks{display:grid;gap:12px;margin:10px 0 0}
+.block{border:1px solid var(--line);border-left:4px solid var(--gold);border-radius:8px;padding:12px 14px 14px;background:#fcfcfa}
+.block-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}
+.tag{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--blue)}
+.tag span{color:var(--muted);font-weight:500;text-transform:none;letter-spacing:0}
+.tools{display:flex;gap:6px;flex:none}
+.block input,.block textarea{margin-bottom:8px}
+.block input:last-child,.block textarea:last-child{margin-bottom:0}
+.block .mini{font-size:13px;font-weight:600;color:var(--navy);margin:8px 0 4px;display:block}
+.photo img{display:block;max-width:100%;max-height:260px;border-radius:6px;border:1px solid var(--line);margin:0 0 10px}
+.photo .missing{padding:18px;border:1px dashed #c9d2d9;border-radius:6px;color:var(--muted);font-size:14px;margin:0 0 10px;background:#fff}
+.add-bar{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px;padding-top:16px;border-top:1px dashed var(--line)}
+.add-bar .lab{width:100%;margin:0 0 2px}
+.list article{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;padding:14px 0;border-top:1px solid var(--line)}
+.list article:first-child{border-top:0}
+.list .meta time{display:block;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--blue)}
+.list .meta strong{font-family:"Lora",Georgia,serif;color:var(--navy);overflow-wrap:anywhere}
+.list .btns{display:flex;gap:8px}
+/* preview = same look as the public Updates page */
+.update-card{background:#fff;border:1px solid var(--line);border-top:3px solid var(--gold);border-radius:10px;padding:clamp(18px,4vw,30px);box-shadow:var(--shadow)}
+.update-card time{font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--blue)}
+.update-card h2{font-size:clamp(24px,3.2vw,32px);margin:6px 0 16px}
+.update-card h3{font-size:clamp(20px,2.6vw,24px);margin:26px 0 8px}
+.update-card h4{font-family:"DM Sans",Arial,sans-serif;font-size:17px;font-weight:700;color:var(--blue);margin:20px 0 6px}
+.update-card p{margin:0 0 14px;color:#33424f}
+.update-card ul{margin:0 0 16px;padding-left:22px;color:#33424f}.update-card li::marker{color:var(--gold)}
+.update-card figure{margin:20px 0}.update-card img{display:block;width:100%;height:auto;border-radius:8px;border:1px solid var(--line)}
+.update-card figcaption{font-size:14px;color:var(--muted);margin-top:8px}
+.update-card .btn{text-decoration:none}
 </style></head><body>
-<header><strong>Omkar Kharade &amp; Co.</strong><a href="https://caomkarkharade.in/updates/">View public updates</a></header>
+<div class="top"><div class="in"><div class="brand"><img src="__SITE_URL__/logo.jpeg" alt="" width="56" height="40"><div><strong>OMKAR KHARADE &amp; CO.</strong><small>OWNER EDITOR</small></div></div><a class="view" href="__SITE_URL__/updates/" target="_blank" rel="noopener">View public Updates page</a></div></div>
 <main><p id="status" role="status" aria-live="polite"></p>
-<section id="signin"><h1>Owner sign-in</h1><form id="login"><label>Username<input name="username" autocomplete="username" required></label><label>Password<input name="password" type="password" autocomplete="current-password" required maxlength="512"></label><button type="submit">Sign in</button></form></section>
-<div id="dashboard" hidden><section><h1 id="heading">New update</h1><form id="post">
-<label>Headline<input name="title" required maxlength="160"></label><label>Publication date<input name="date" type="date" required></label>
-<label>Message<textarea name="body" rows="6" maxlength="5000" required></textarea></label>
-<label>Source link (optional)<input name="source" type="url" placeholder="https://" maxlength="2048"></label>
-<button type="submit">Publish</button><button type="button" id="cancel" hidden>Cancel edit</button></form></section>
-<section><h2>Published updates</h2><div id="list"></div><button id="reload">Reload list</button><button id="logout">Sign out</button></section></div></main>
+
+<section class="card" id="signin"><h1>Owner sign-in</h1><p class="hint">Sign in to add or edit firm updates.</p>
+<form id="login"><label for="u">Username</label><input id="u" name="username" autocomplete="username" required>
+<label for="pw">Password</label><input id="pw" name="password" type="password" autocomplete="current-password" required maxlength="512">
+<div class="actions"><button class="btn primary" type="submit">Sign in</button></div></form></section>
+
+<div id="dashboard" hidden>
+<section class="card"><h1 id="heading">New update</h1>
+<form id="post" novalidate>
+<div class="step"><b>1</b><h2>Headline &amp; date</h2></div>
+<div class="row"><div><label for="title">Headline <small>(the title of this update, shown as H2)</small></label><input id="title" name="title" maxlength="160" required></div>
+<div><label for="date">Date</label><input id="date" name="date" type="date" required></div></div>
+
+<div class="step"><b>2</b><h2>Content</h2></div>
+<p class="hint">Build the update from sections. Use the buttons at the bottom to add a heading, text, a list, a photo or a button. Use the arrows to reorder.</p>
+<div class="blocks" id="blocks"></div>
+<div class="add-bar" role="group" aria-label="Add a section"><span class="lab">Add a section</span>
+<button class="btn small" type="button" data-add="h">+ Heading</button>
+<button class="btn small" type="button" data-add="sh">+ Sub-heading</button>
+<button class="btn small" type="button" data-add="p">+ Paragraph</button>
+<button class="btn small" type="button" data-add="ul">+ Bullet list</button>
+<button class="btn small" type="button" data-add="img">+ Photo</button>
+<button class="btn small" type="button" data-add="link">+ Button link</button></div>
+
+<div class="step"><b>3</b><h2>Source link <small style="font-weight:400;color:var(--muted);font-family:'DM Sans',Arial,sans-serif;font-size:14px">(optional)</small></h2></div>
+<label for="source" class="lab" style="margin-top:6px">Official notification or circular link</label><input id="source" name="source" type="url" placeholder="https://" maxlength="2048">
+
+<div class="actions"><button class="btn primary" type="submit">Publish</button><button class="btn" type="button" id="previewBtn">Preview</button><button class="btn" type="button" id="cancel" hidden>Cancel edit</button></div>
+</form></section>
+
+<section class="card" id="previewCard" hidden><h2 style="margin-bottom:14px">Preview <small style="font-family:'DM Sans',Arial,sans-serif;font-weight:400;color:var(--muted);font-size:14px">(how it will look on the website)</small></h2><article class="update-card" id="preview"></article></section>
+
+<section class="card"><h2 style="margin-bottom:8px">Published updates</h2><div class="list" id="list"></div>
+<div class="actions"><button class="btn small" id="reload" type="button">Reload list</button><button class="btn small" id="logout" type="button">Sign out</button></div></section>
+</div></main>
+
 <script>
-const byId=id=>document.getElementById(id);
-const login=byId('login'), post=byId('post');
-let snapshot, editing=null;
-function showEditor(active){byId('dashboard').hidden=!active;byId('signin').hidden=active}
+const SITE='__SITE_URL__';
+const $=id=>document.getElementById(id);
+const login=$('login'), post=$('post');
+const TYPES={
+ h:{label:'Heading',level:'H3',hint:'big title for a section'},
+ sh:{label:'Sub-heading',level:'H4',hint:'smaller title under a heading'},
+ p:{label:'Paragraph',level:'',hint:'normal text'},
+ ul:{label:'Bullet list',level:'',hint:'one point per line'},
+ img:{label:'Photo',level:'',hint:'JPG, PNG or WebP'},
+ link:{label:'Button link',level:'',hint:'a button that opens a web page'}
+};
+let snapshot=null, editing=null, blocks=[], dirty=false, busy=false;
+
+function el(tag,props={},...kids){const n=document.createElement(tag);for(const[k,v]of Object.entries(props)){if(k==='class')n.className=v;else if(k==='text')n.textContent=v;else if(k.startsWith('on'))n[k]=v;else n.setAttribute(k,v)}n.append(...kids);return n}
+function statusText(message,error){const s=$('status');s.textContent=message||'';s.classList.toggle('err',!!error);if(message)s.scrollIntoView({block:'nearest'})}
+function showEditor(active){$('dashboard').hidden=!active;$('signin').hidden=active}
 async function api(path,payload){
  const response=await fetch('/'+path,payload===undefined?{cache:'no-store'}:{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
- const data=await response.json();
+ let data={};try{data=await response.json()}catch{}
  if(!response.ok){if(response.status===401)showEditor(false);throw Error(data.error||'Request failed.')}
  return data;
 }
+async function run(fn){if(busy)return;busy=true;document.querySelector('main').setAttribute('aria-busy','true');try{await fn()}catch(e){statusText(e.message,true)}finally{busy=false;document.querySelector('main').removeAttribute('aria-busy')}}
+const today=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
+const newBlock=type=>({type,text:'',alt:'',caption:'',src:'',preview:'',label:'',url:''});
+const markDirty=()=>{dirty=true};
+
+/* ---------- block editor ---------- */
+function tool(symbol,label,disabled,onclick,extra){const b=el('button',{type:'button',class:'btn small'+(extra?' '+extra:''),'aria-label':label,title:label,text:symbol,onclick});b.disabled=disabled;return b}
+function move(i,d){const j=i+d;if(j<0||j>=blocks.length)return;[blocks[i],blocks[j]]=[blocks[j],blocks[i]];markDirty();renderBlocks()}
+function removeBlock(i){if(blocks[i].text||blocks[i].src||blocks[i].label){if(!confirm('Remove this section?'))return}blocks.splice(i,1);markDirty();renderBlocks()}
+function field(tag,b,key,attrs){const f=el(tag,attrs);f.value=b[key]||'';f.oninput=()=>{b[key]=f.value};return f}
+function blockBody(b){
+ const frag=document.createDocumentFragment();
+ if(b.type==='h'||b.type==='sh')frag.append(field('input',b,'text',{type:'text',maxlength:160,placeholder:b.type==='h'?'e.g. Key changes this year':'e.g. Who is affected','aria-label':TYPES[b.type].label}));
+ else if(b.type==='p')frag.append(field('textarea',b,'text',{rows:5,maxlength:4000,placeholder:'Write your text here…','aria-label':'Paragraph text'}));
+ else if(b.type==='ul')frag.append(field('textarea',b,'text',{rows:5,maxlength:6000,placeholder:'First point\nSecond point\nThird point','aria-label':'Bullet points, one per line'}));
+ else if(b.type==='link'){frag.append(field('input',b,'label',{type:'text',maxlength:80,placeholder:'Button text, e.g. Download the circular','aria-label':'Button text'}),field('input',b,'url',{type:'url',maxlength:2048,placeholder:'https://','aria-label':'Button link'}))}
+ else if(b.type==='img'){
+  const box=el('div',{class:'photo'});
+  if(b.src){
+   const img=el('img',{alt:'Selected photo',src:b.preview||SITE+b.src});
+   img.onerror=()=>img.replaceWith(el('div',{class:'missing',text:'Photo uploaded. It will show here once the website has updated.'}));
+   box.append(img);
+  }
+  const pick=el('input',{type:'file',accept:'image/*',hidden:''});
+  pick.onchange=()=>{const file=pick.files[0];if(file)run(()=>uploadPhoto(b,file))};
+  box.append(pick,el('button',{type:'button',class:'btn small',text:b.src?'Change photo':'Choose photo',onclick:()=>pick.click()}),
+   el('span',{class:'mini',text:'Describe the photo (for visitors who cannot see it, and for Google)'}),
+   field('input',b,'alt',{type:'text',maxlength:200,placeholder:'e.g. GST filing deadline calendar','aria-label':'Photo description'}),
+   el('span',{class:'mini',text:'Caption (optional)'}),
+   field('input',b,'caption',{type:'text',maxlength:200,'aria-label':'Photo caption'}));
+  frag.append(box);
+ }
+ return frag;
+}
+function renderBlocks(){
+ const wrap=$('blocks');wrap.replaceChildren();
+ if(!blocks.length)wrap.append(el('p',{class:'hint',text:'Nothing here yet. Use the buttons below to add a heading, paragraph, photo or list.'}));
+ blocks.forEach((b,i)=>{
+  const t=TYPES[b.type];
+  const tag=el('div',{class:'tag'},document.createTextNode(t.label+' '),el('span',{text:(t.level?'('+t.level+') · ':'· ')+t.hint}));
+  const tools=el('div',{class:'tools'},tool('↑','Move up',i===0,()=>move(i,-1)),tool('↓','Move down',i===blocks.length-1,()=>move(i,1)),tool('✕','Remove this section',false,()=>removeBlock(i),'danger'));
+  wrap.append(el('div',{class:'block'},el('div',{class:'block-head'},tag,tools),blockBody(b)));
+ });
+}
+document.querySelectorAll('[data-add]').forEach(btn=>btn.onclick=()=>{blocks.push(newBlock(btn.dataset.add));markDirty();renderBlocks();const last=$('blocks').lastElementChild.querySelector('input:not([type=file]),textarea');if(last)last.focus()});
+
+/* ---------- photos: resized in the browser, saved as JPEG ---------- */
+async function prepareImage(file){
+ if(!file.type.startsWith('image/'))throw Error('Please choose a photo (JPG, PNG or WebP).');
+ let bmp;
+ try{bmp=await createImageBitmap(file,{imageOrientation:'from-image'})}
+ catch{bmp=await new Promise((res,rej)=>{const img=new Image();img.onload=()=>res(img);img.onerror=()=>rej(Error('This photo could not be read. Try a JPG or PNG.'));img.src=URL.createObjectURL(file)})}
+ const w=bmp.width||bmp.naturalWidth,h=bmp.height||bmp.naturalHeight,scale=Math.min(1,1600/Math.max(w,h));
+ const c=document.createElement('canvas');c.width=Math.max(1,Math.round(w*scale));c.height=Math.max(1,Math.round(h*scale));
+ const ctx=c.getContext('2d');ctx.fillStyle='#fff';ctx.fillRect(0,0,c.width,c.height);ctx.drawImage(bmp,0,0,c.width,c.height);
+ for(const q of [.82,.7,.6,.5]){
+  const blob=await new Promise(r=>c.toBlob(r,'image/jpeg',q));
+  if(blob&&blob.size<=1700000){
+   const url=await new Promise((res,rej)=>{const f=new FileReader();f.onload=()=>res(f.result);f.onerror=()=>rej(Error('Could not read the photo.'));f.readAsDataURL(blob)});
+   return{b64:url.slice(url.indexOf(',')+1),preview:url};
+  }
+ }
+ throw Error('This photo is too large. Try a smaller one.');
+}
+async function uploadPhoto(b,file){
+ statusText('Preparing photo…');
+ const {b64,preview}=await prepareImage(file);
+ statusText('Uploading photo…');
+ const result=await api('upload',{image:b64});
+ b.src=result.src;b.preview=preview;markDirty();renderBlocks();
+ statusText('Photo uploaded. Add a short description under it.');
+}
+
+/* ---------- form <-> data ---------- */
+function collectBlocks(){
+ const out=[];
+ for(const b of blocks){
+  if(b.type==='ul'){const items=(b.text||'').split('\n').map(s=>s.trim()).filter(Boolean);if(items.length)out.push({type:'ul',items})}
+  else if(b.type==='img'){if(!b.src)throw Error('One of the Photo sections has no photo. Choose a photo or remove the section.');out.push({type:'img',src:b.src,alt:(b.alt||'').trim(),caption:(b.caption||'').trim()})}
+  else if(b.type==='link'){if(!(b.label||'').trim()&&!(b.url||'').trim())continue;out.push({type:'link',label:(b.label||'').trim(),url:(b.url||'').trim()})}
+  else if((b.text||'').trim())out.push({type:b.type,text:b.text.trim()});
+ }
+ return out;
+}
 function draft(item){
- editing=item?.id||null;
- post.reset();
- const today=new Date();
- post.elements.date.value=item?.date||today.getFullYear()+'-'+String(today.getMonth()+1).padStart(2,'0')+'-'+String(today.getDate()).padStart(2,'0');
- if(item)for(const field of ['title','body','source'])post.elements[field].value=item[field]||'';
- byId('heading').textContent=item?'Edit update':'New update';
- byId('cancel').hidden=!item;
+ editing=item?.id||null;post.reset();dirty=false;
+ post.elements.date.value=item?.date||today();
+ post.elements.title.value=item?.title||'';post.elements.source.value=item?.source||'';
+ if(item){
+  blocks=Array.isArray(item.blocks)&&item.blocks.length?item.blocks.map(b=>({...newBlock(b.type),...b,text:b.type==='ul'?(b.items||[]).join('\n'):(b.text||'')})):[{...newBlock('p'),text:item.body||''}];
+ }else blocks=[newBlock('p')];
+ renderBlocks();$('previewCard').hidden=true;
+ $('heading').textContent=item?'Edit update':'New update';
+ $('cancel').hidden=!item;
  post.querySelector('button[type=submit]').textContent=item?'Save changes':'Publish';
 }
-function display(data){
- snapshot=data;const list=byId('list');list.replaceChildren();
- if(!data.items.length)list.textContent='No published updates yet.';
- for(const item of data.items){
- const row=document.createElement('article'),title=document.createElement('strong'),date=document.createElement('time');
- title.textContent=item.title;date.textContent=item.date;row.append(title,date,document.createElement('br'));
- for(const label of ['Edit','Delete']){
- const button=document.createElement('button');button.textContent=label;
- button.onclick=()=>{if(label==='Edit'){draft(item);post.elements.title.focus()}else if(confirm('Delete “'+item.title+'” from the public updates?'))run(async()=>{display(await api('entries',{action:'delete',id:item.id,sha:snapshot.sha}));if(editing===item.id)draft();statusText('Deletion saved. The public page will update after deployment.')})};
- row.append(button);
- }list.append(row);
- }showEditor(true);
+function previewNode(){
+ const card=$('preview');card.replaceChildren();
+ card.append(el('time',{text:post.elements.date.value}),el('h2',{text:post.elements.title.value||'(Headline)'}));
+ let items;try{items=collectBlocks()}catch(e){items=[];card.append(el('p',{text:e.message}))}
+ for(const b of items){
+  if(b.type==='h')card.append(el('h3',{text:b.text}));
+  else if(b.type==='sh')card.append(el('h4',{text:b.text}));
+  else if(b.type==='p'){const p=el('p');b.text.split('\n').forEach((line,i)=>{if(i)p.append(el('br'));p.append(document.createTextNode(line))});card.append(p)}
+  else if(b.type==='ul')card.append(el('ul',{},...b.items.map(t=>el('li',{text:t}))));
+  else if(b.type==='img'){const src=(blocks.find(x=>x.src===b.src)||{}).preview||SITE+b.src;card.append(el('figure',{},el('img',{src,alt:b.alt}),...(b.caption?[el('figcaption',{text:b.caption})]:[])))}
+  else if(b.type==='link')card.append(el('p',{},el('a',{class:'btn primary',href:'#',onclick:e=>e.preventDefault(),text:b.label||'Button'})));
+ }
 }
-function statusText(s){byId('status').textContent=s}
-let busy=false;
-async function run(fn){if(busy)return;busy=true;document.querySelector('main').setAttribute('aria-busy','true');try{await fn()}catch(e){statusText(e.message)}finally{busy=false;document.querySelector('main').removeAttribute('aria-busy')}}
+$('previewBtn').onclick=()=>{previewNode();$('previewCard').hidden=false;$('previewCard').scrollIntoView({behavior:'smooth',block:'start'})};
+
+function display(data){
+ snapshot=data;const list=$('list');list.replaceChildren();
+ if(!data.items.length)list.append(el('p',{class:'hint',text:'No published updates yet.'}));
+ [...data.items].sort((a,b)=>b.date.localeCompare(a.date)).forEach(item=>{
+  const edit=el('button',{type:'button',class:'btn small',text:'Edit',onclick:()=>{if(dirty&&!confirm('Discard the changes in the form?'))return;draft(item);window.scrollTo({top:0,behavior:'smooth'});post.elements.title.focus()}});
+  const del=el('button',{type:'button',class:'btn small danger',text:'Delete',onclick:()=>{if(confirm('Delete “'+item.title+'” from the public updates?'))run(async()=>{display(await api('entries',{action:'delete',id:item.id,sha:snapshot.sha}));if(editing===item.id)draft();statusText('Deletion saved. The public page will update in a minute or two.')})}});
+  list.append(el('article',{},el('div',{class:'meta'},el('time',{text:item.date}),el('strong',{text:item.title})),el('div',{class:'btns'},edit,del)));
+ });
+ showEditor(true);
+}
+
+/* ---------- events ---------- */
 login.onsubmit=e=>{e.preventDefault();run(async()=>{await api('login',Object.fromEntries(new FormData(login)));login.reset();display(await api('entries'));statusText('Signed in.')})};
-post.onsubmit=e=>{e.preventDefault();run(async()=>{display(await api('entries',{action:editing?'edit':'add',id:editing,sha:snapshot.sha,...Object.fromEntries(new FormData(post))}));draft();statusText('Saved to GitHub. Your update will appear after the site deploys.')})};
-byId('cancel').onclick=()=>draft();
-byId('reload').onclick=()=>run(async()=>{if(!confirm('Reload the latest updates and clear the current form?'))return;display(await api('entries'));draft();statusText('List refreshed.')});
-byId('logout').onclick=()=>run(async()=>{await api('logout',{});draft();snapshot=null;byId('list').replaceChildren();showEditor(false);statusText('Signed out.')});
+post.addEventListener('input',markDirty);
+post.onsubmit=e=>{e.preventDefault();run(async()=>{
+ const title=post.elements.title.value.trim();
+ if(!title)throw Error('Please enter a headline.');
+ if(!post.elements.date.value)throw Error('Please choose a date.');
+ const content=collectBlocks();
+ if(!content.length)throw Error('Please add some content: a paragraph, list or photo.');
+ const source=post.elements.source.value.trim();
+ display(await api('entries',{action:editing?'edit':'add',id:editing,sha:snapshot.sha,title,date:post.elements.date.value,source,blocks:content}));
+ draft();statusText('Saved. Your update will appear on the website in a minute or two.');window.scrollTo({top:0,behavior:'smooth'});
+})};
+$('cancel').onclick=()=>draft();
+$('reload').onclick=()=>run(async()=>{if(dirty&&!confirm('Reload the list and clear the current form?'))return;display(await api('entries'));draft();statusText('List refreshed.')});
+$('logout').onclick=()=>run(async()=>{if(dirty&&!confirm('You have unsaved changes. Sign out anyway?'))return;await api('logout',{});draft();snapshot=null;$('list').replaceChildren();showEditor(false);statusText('Signed out.')});
+addEventListener('beforeunload',e=>{if(dirty){e.preventDefault();e.returnValue=''}});
 draft();run(async()=>{try{display(await api('entries'))}catch(e){if(e.message!=='Please sign in.')throw e}});
 </script></body></html>

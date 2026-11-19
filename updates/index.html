@@ -4,11 +4,24 @@ title: Updates
 ---
 {% assign entries = site.data.updates | sort: "date" | reverse %}
 {% for item in entries %}
-<article id="update-{{ item.id | escape }}">
+<article class="update-card" id="update-{{ item.id | escape }}">
   <time datetime="{{ item.date | escape }}">{{ item.date | date: "%d %B %Y" }}</time>
   <h2>{{ item.title | escape }}</h2>
-  <p style="white-space:pre-line">{{ item.body | escape }}</p>
-  {% if item.source != empty %}<a href="{{ item.source | escape }}" rel="external">Read the source</a>{% endif %}
+  {% if item.blocks and item.blocks.size > 0 %}
+    {% for b in item.blocks %}
+      {% case b.type %}
+        {% when 'h' %}<h3>{{ b.text | escape }}</h3>
+        {% when 'sh' %}<h4>{{ b.text | escape }}</h4>
+        {% when 'p' %}<p>{{ b.text | escape | newline_to_br }}</p>
+        {% when 'ul' %}<ul>{% for li in b.items %}<li>{{ li | escape }}</li>{% endfor %}</ul>
+        {% when 'img' %}<figure><img src="{{ b.src | relative_url }}" alt="{{ b.alt | escape }}" loading="lazy" decoding="async">{% if b.caption and b.caption != empty %}<figcaption>{{ b.caption | escape }}</figcaption>{% endif %}</figure>
+        {% when 'link' %}<p><a class="btn primary" href="{{ b.url | escape }}" target="_blank" rel="noopener external">{{ b.label | escape }}</a></p>
+      {% endcase %}
+    {% endfor %}
+  {% elsif item.body %}
+    <p>{{ item.body | escape | newline_to_br }}</p>
+  {% endif %}
+  {% if item.source and item.source != empty %}<p class="update-source"><a href="{{ item.source | escape }}" target="_blank" rel="noopener external">Read the official source ↗</a></p>{% endif %}
 </article>
 {% else %}
 <p>No updates have been published yet.</p>
